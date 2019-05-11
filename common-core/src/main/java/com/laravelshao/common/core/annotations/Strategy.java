@@ -19,6 +19,13 @@ import java.lang.annotation.*;
 public @interface Strategy {
 
     /**
+     * 父类
+     *
+     * @return
+     */
+    Class<?> superClass();
+
+    /**
      * 策略代码
      *
      * @return

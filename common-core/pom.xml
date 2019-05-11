@@ -5,7 +5,7 @@
     <parent>
         <artifactId>common</artifactId>
         <groupId>com.laravelshao.common</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -22,9 +22,18 @@
             <artifactId>spring-context</artifactId>
         </dependency>
 
+        <!-- guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
 
+        <!-- apache commons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
 
     </dependencies>
-
 
 </project>

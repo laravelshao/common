@@ -7,7 +7,7 @@
     <groupId>com.laravelshao.common</groupId>
     <artifactId>common</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <name>common</name>
     <description>个人开发common包抽取</description>
@@ -19,8 +19,10 @@
 
     <properties>
         <spring.version>5.0.5.RELEASE</spring.version>
+        <spring-boot-autoconfigure.version>2.0.1.RELEASE</spring-boot-autoconfigure.version>
         <lombok.version>1.16.16</lombok.version>
         <guava.version>23.0</guava.version>
+        <commons-lang3.version>3.4</commons-lang3.version>
     </properties>
 
     <dependencyManagement>
@@ -51,6 +53,13 @@
                 <version>${spring.version}</version>
             </dependency>
 
+            <!-- spring boot -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-autoconfigure</artifactId>
+                <version>${spring-boot-autoconfigure.version}</version>
+            </dependency>
+
             <!-- lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -62,6 +71,13 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+
+            <!-- apache commons -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
             </dependency>
 
         </dependencies>
