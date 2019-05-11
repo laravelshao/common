@@ -24,5 +24,4 @@ public class StrategyHandler implements InitializingBean, ApplicationContextAwar
 
     }
 
-
 }
