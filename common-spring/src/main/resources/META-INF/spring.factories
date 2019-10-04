@@ -1,4 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.laravelshao.common.spring.config.StrategyHandlerConfiguration,\
 com.laravelshao.common.spring.config.ElasticJobZookeeperAutoConfiguration,\
-com.laravelshao.common.spring.config.ElasticSimpleJobHandlerAutoConfiguration
+com.laravelshao.common.spring.config.ElasticSimpleJobHandlerAutoConfiguration,\
+com.laravelshao.common.spring.config.ElasticDataflowJobHandlerAutoConfiguration
