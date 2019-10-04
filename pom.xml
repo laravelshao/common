@@ -18,11 +18,12 @@
     </modules>
 
     <properties>
-        <spring.version>5.0.7.RELEASE</spring.version>
-        <spring-boot-autoconfigure.version>2.0.1.RELEASE</spring-boot-autoconfigure.version>
+        <spring.version>5.1.10.RELEASE</spring.version>
+        <spring-boot.version>2.1.9.RELEASE</spring-boot.version>
         <lombok.version>1.16.16</lombok.version>
         <guava.version>23.0</guava.version>
         <commons-lang3.version>3.4</commons-lang3.version>
+        <elastic-job.version>2.1.5</elastic-job.version>
     </properties>
 
     <dependencyManagement>
@@ -34,19 +35,16 @@
                 <artifactId>spring-core</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-tx</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
@@ -56,8 +54,20 @@
             <!-- spring boot -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-autoconfigure</artifactId>
-                <version>${spring-boot-autoconfigure.version}</version>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <!-- 自定义配置处理器 自定义的elastic-job zookeeper 配置需要在配置文件中使用 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <version>${spring-boot.version}</version>
+                <optional>true</optional>
             </dependency>
 
             <!-- lombok -->
@@ -72,12 +82,22 @@
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
-
             <!-- apache commons -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
+            </dependency>
+            <!-- elastic job -->
+            <dependency>
+                <groupId>com.dangdang</groupId>
+                <artifactId>elastic-job-lite-core</artifactId>
+                <version>${elastic-job.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dangdang</groupId>
+                <artifactId>elastic-job-lite-spring</artifactId>
+                <version>${elastic-job.version}</version>
             </dependency>
 
         </dependencies>
