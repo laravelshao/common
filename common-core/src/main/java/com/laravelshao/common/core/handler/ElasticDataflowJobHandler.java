@@ -1,11 +1,12 @@
 package com.laravelshao.common.core.handler;
 
+import com.dangdang.ddframe.job.api.ElasticJob;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.JobTypeConfiguration;
 import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
-import com.dangdang.ddframe.job.lite.api.JobScheduler;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
+import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.laravelshao.common.core.annotations.ElasticDataflowJob;
 import org.springframework.beans.BeansException;
@@ -73,10 +74,10 @@ public class ElasticDataflowJobHandler implements InitializingBean, ApplicationC
                 LiteJobConfiguration liteJobConfig = LiteJobConfiguration.newBuilder(dataflowJobConfig).overwrite(overwrite).build();
 
                 // 初始化JOB任务
-                new JobScheduler(zookeeperRegistryCenter, liteJobConfig).init();
+                //new JobScheduler(zookeeperRegistryCenter, liteJobConfig).init(); // spring整合存在npe，需使用SpringJobScheduler
+                new SpringJobScheduler((ElasticJob) instance, zookeeperRegistryCenter, liteJobConfig).init();
             }
         }
-
     }
 }
 
