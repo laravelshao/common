@@ -1,5 +1,6 @@
 package com.laravelshao.common.core.annotations;
 
+import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
 import com.dangdang.ddframe.job.lite.api.strategy.JobShardingStrategy;
 import com.dangdang.ddframe.job.lite.api.strategy.impl.AverageAllocationJobShardingStrategy;
 import org.springframework.stereotype.Component;
@@ -55,4 +56,9 @@ public @interface ElasticDataflowJob {
      * 是否开启任务事件追踪
      */
     boolean isJobEventTrace() default false;
+
+    /**
+     * 作业监听器
+     */
+    Class<? extends ElasticJobListener>[] jobListeners() default {};
 }

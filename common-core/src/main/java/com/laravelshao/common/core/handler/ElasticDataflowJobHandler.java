@@ -1,14 +1,12 @@
 package com.laravelshao.common.core.handler;
 
-import com.dangdang.ddframe.job.api.ElasticJob;
 import com.dangdang.ddframe.job.api.dataflow.DataflowJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.JobTypeConfiguration;
 import com.dangdang.ddframe.job.config.dataflow.DataflowJobConfiguration;
-import com.dangdang.ddframe.job.event.JobEventConfiguration;
-import com.dangdang.ddframe.job.event.rdb.JobEventRdbConfiguration;
+import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;
+import com.dangdang.ddframe.job.lite.api.strategy.JobShardingStrategy;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
-import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.laravelshao.common.core.annotations.ElasticDataflowJob;
 import org.springframework.beans.BeansException;
@@ -19,6 +17,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -28,7 +27,7 @@ import java.util.Map;
  * @date 2019/10/4
  * @since 1.0.0
  */
-public class ElasticDataflowJobHandler implements InitializingBean, ApplicationContextAware {
+public class ElasticDataflowJobHandler extends ElasticJobCommonHandler implements InitializingBean, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
@@ -44,7 +43,7 @@ public class ElasticDataflowJobHandler implements InitializingBean, ApplicationC
     }
 
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
         Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(ElasticDataflowJob.class);
         if (CollectionUtils.isEmpty(beansWithAnnotation)) {
@@ -70,8 +69,12 @@ public class ElasticDataflowJobHandler implements InitializingBean, ApplicationC
                 int shardingTotalCount = elasticDataflowJob.shardingTotalCount();
                 boolean overwrite = elasticDataflowJob.overwrite();
                 boolean streamingProcess = elasticDataflowJob.streamingProcess();
-                Class<?> jobShardingStrategyClass = elasticDataflowJob.jobShardingStrategy();
+                Class<? extends JobShardingStrategy> jobShardingStrategyClass = elasticDataflowJob.jobShardingStrategy();
                 boolean isJobEventTrace = elasticDataflowJob.isJobEventTrace();
+                Class<? extends ElasticJobListener>[] jobListeners = elasticDataflowJob.jobListeners();
+
+                // 处理作业监听器
+                ElasticJobListener[] listenerInstances = handleJobListeners(jobListeners);
 
                 // JOB核心配置
                 JobCoreConfiguration jobCoreConfig = JobCoreConfiguration.newBuilder(jobName, cron, shardingTotalCount).build();
@@ -82,14 +85,8 @@ public class ElasticDataflowJobHandler implements InitializingBean, ApplicationC
                 LiteJobConfiguration liteJobConfig = LiteJobConfiguration.newBuilder(dataflowJobConfig)
                         .overwrite(overwrite).jobShardingStrategyClass(jobShardingStrategyClass.getCanonicalName()).build();
 
-                // 初始化JOB任务
-                //new JobScheduler(zookeeperRegistryCenter, liteJobConfig).init(); // spring整合存在npe，需使用SpringJobScheduler
-                if (isJobEventTrace) {
-                    JobEventConfiguration jobEventConfig = new JobEventRdbConfiguration(dataSource);
-                    new SpringJobScheduler((ElasticJob) instance, zookeeperRegistryCenter, liteJobConfig, jobEventConfig).init();
-                } else {
-                    new SpringJobScheduler((ElasticJob) instance, zookeeperRegistryCenter, liteJobConfig).init();
-                }
+                // 初始化Spring作业调度器
+                initSpringJobScheduler(instance, zookeeperRegistryCenter, liteJobConfig, isJobEventTrace, dataSource, listenerInstances);
             }
         }
     }
