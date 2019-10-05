@@ -5,6 +5,8 @@ import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
 import com.dangdang.ddframe.job.config.JobTypeConfiguration;
 import com.dangdang.ddframe.job.config.simple.SimpleJobConfiguration;
+import com.dangdang.ddframe.job.event.JobEventConfiguration;
+import com.dangdang.ddframe.job.event.rdb.JobEventRdbConfiguration;
 import com.dangdang.ddframe.job.lite.config.LiteJobConfiguration;
 import com.dangdang.ddframe.job.lite.spring.api.SpringJobScheduler;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
@@ -16,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
 
+import javax.sql.DataSource;
 import java.util.Map;
 
 /**
@@ -31,6 +34,9 @@ public class ElasticSimpleJobHandler implements InitializingBean, ApplicationCon
 
     @Autowired
     private CoordinatorRegistryCenter zookeeperRegistryCenter;
+
+    @Autowired
+    private DataSource dataSource;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -64,6 +70,7 @@ public class ElasticSimpleJobHandler implements InitializingBean, ApplicationCon
                 int shardingTotalCount = elasticSimpleJob.shardingTotalCount();
                 boolean overwrite = elasticSimpleJob.overwrite();
                 Class<?> jobShardingStrategyClass = elasticSimpleJob.jobShardingStrategy();
+                boolean isJobEventTrace = elasticSimpleJob.isJobEventTrace();
 
                 // JOB核心配置
                 JobCoreConfiguration jobCoreConfig = JobCoreConfiguration.newBuilder(jobName, cron, shardingTotalCount).build();
@@ -75,7 +82,12 @@ public class ElasticSimpleJobHandler implements InitializingBean, ApplicationCon
 
                 // 初始化JOB任务
                 //new JobScheduler(zookeeperRegistryCenter, liteJobConfig).init(); // spring整合存在npe，需使用SpringJobScheduler
-                new SpringJobScheduler((ElasticJob) instance, zookeeperRegistryCenter, liteJobConfig).init();
+                if (isJobEventTrace) {
+                    JobEventConfiguration jobEventConfig = new JobEventRdbConfiguration(dataSource);
+                    new SpringJobScheduler((ElasticJob) instance, zookeeperRegistryCenter, liteJobConfig, jobEventConfig).init();
+                } else {
+                    new SpringJobScheduler((ElasticJob) instance, zookeeperRegistryCenter, liteJobConfig).init();
+                }
             }
         }
     }

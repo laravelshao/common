@@ -50,4 +50,9 @@ public @interface ElasticDataflowJob {
      * 任务分片策略
      */
     Class<? extends JobShardingStrategy> jobShardingStrategy() default AverageAllocationJobShardingStrategy.class;
+
+    /**
+     * 是否开启任务事件追踪
+     */
+    boolean isJobEventTrace() default false;
 }
