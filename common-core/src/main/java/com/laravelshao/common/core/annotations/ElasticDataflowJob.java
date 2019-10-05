@@ -1,5 +1,7 @@
 package com.laravelshao.common.core.annotations;
 
+import com.dangdang.ddframe.job.lite.api.strategy.JobShardingStrategy;
+import com.dangdang.ddframe.job.lite.api.strategy.impl.AverageAllocationJobShardingStrategy;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.ElementType;
@@ -43,4 +45,9 @@ public @interface ElasticDataflowJob {
      * 是否流式处理
      */
     boolean streamingProcess() default false;
+
+    /**
+     * 任务分片策略
+     */
+    Class<? extends JobShardingStrategy> jobShardingStrategy() default AverageAllocationJobShardingStrategy.class;
 }

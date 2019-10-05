@@ -63,13 +63,15 @@ public class ElasticSimpleJobHandler implements InitializingBean, ApplicationCon
                 String cron = elasticSimpleJob.cron();
                 int shardingTotalCount = elasticSimpleJob.shardingTotalCount();
                 boolean overwrite = elasticSimpleJob.overwrite();
+                Class<?> jobShardingStrategyClass = elasticSimpleJob.jobShardingStrategy();
 
                 // JOB核心配置
                 JobCoreConfiguration jobCoreConfig = JobCoreConfiguration.newBuilder(jobName, cron, shardingTotalCount).build();
                 // JOB类型配置
                 JobTypeConfiguration simpleJobConfig = new SimpleJobConfiguration(jobCoreConfig, instance.getClass().getCanonicalName());
-                // JOB根配置
-                LiteJobConfiguration liteJobConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).overwrite(overwrite).build();
+                // JOB根配置(设置是否覆盖配置、任务分片策略)
+                LiteJobConfiguration liteJobConfig = LiteJobConfiguration.newBuilder(simpleJobConfig)
+                        .overwrite(overwrite).jobShardingStrategyClass(jobShardingStrategyClass.getCanonicalName()).build();
 
                 // 初始化JOB任务
                 //new JobScheduler(zookeeperRegistryCenter, liteJobConfig).init(); // spring整合存在npe，需使用SpringJobScheduler

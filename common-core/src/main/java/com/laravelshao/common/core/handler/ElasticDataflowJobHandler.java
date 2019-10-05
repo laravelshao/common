@@ -64,14 +64,16 @@ public class ElasticDataflowJobHandler implements InitializingBean, ApplicationC
                 int shardingTotalCount = elasticDataflowJob.shardingTotalCount();
                 boolean overwrite = elasticDataflowJob.overwrite();
                 boolean streamingProcess = elasticDataflowJob.streamingProcess();
+                Class<?> jobShardingStrategyClass = elasticDataflowJob.jobShardingStrategy();
 
                 // JOB核心配置
                 JobCoreConfiguration jobCoreConfig = JobCoreConfiguration.newBuilder(jobName, cron, shardingTotalCount).build();
                 // JOB类型配置
                 JobTypeConfiguration dataflowJobConfig = new DataflowJobConfiguration(
                         jobCoreConfig, instance.getClass().getCanonicalName(), streamingProcess);
-                // JOB根配置
-                LiteJobConfiguration liteJobConfig = LiteJobConfiguration.newBuilder(dataflowJobConfig).overwrite(overwrite).build();
+                // JOB根配置(设置是否覆盖配置、任务分片策略)
+                LiteJobConfiguration liteJobConfig = LiteJobConfiguration.newBuilder(dataflowJobConfig)
+                        .overwrite(overwrite).jobShardingStrategyClass(jobShardingStrategyClass.getCanonicalName()).build();
 
                 // 初始化JOB任务
                 //new JobScheduler(zookeeperRegistryCenter, liteJobConfig).init(); // spring整合存在npe，需使用SpringJobScheduler
